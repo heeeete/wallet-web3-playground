@@ -4,6 +4,7 @@ import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import { Providers } from "./providers";
+import Header from "@/components/layouts/Header";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -26,9 +27,13 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		// suppressHydrationWarning - 임시 처리 / 나중에 Cookie 기반 Theme 적용 시 제거
+		<html lang="en" suppressHydrationWarning>
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<Providers>{children}</Providers>
+				<Providers>
+					<Header />
+					{children}
+				</Providers>
 			</body>
 		</html>
 	);

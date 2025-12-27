@@ -17,7 +17,6 @@ export default function Home() {
 
 	return (
 		<main>
-			<ConnectButton />
 			<div>
 				<div>Connected: {String(isConnected)}</div>
 				<div>Address: {address ?? "-"}</div>
