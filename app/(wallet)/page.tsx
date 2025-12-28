@@ -12,6 +12,8 @@ import { SubmitButton } from "./_components/SubmitButton";
 import { TransactionLink } from "./_components/TransactionLink";
 import { createTransferFormSchema, TransferFormData } from "./_components/transferFormSchema";
 import { useTransactionState } from "./_components/useTransactionState";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Home() {
 	const { address } = useAccount();
@@ -36,6 +38,14 @@ export default function Home() {
 			value: parseEther(data.amount.toString()),
 		});
 	};
+
+	useEffect(() => {
+		if (uiState === "success") {
+			toast.success("트랜잭션이 성공적으로 완료되었습니다.");
+		} else if (uiState === "error") {
+			toast.error("트랜잭션이 실패했습니다.");
+		}
+	}, [uiState]);
 
 	return (
 		<div>

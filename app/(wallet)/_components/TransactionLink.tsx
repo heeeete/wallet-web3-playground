@@ -1,3 +1,4 @@
+import { Link2 } from "lucide-react";
 import Link from "next/link";
 
 interface TransactionLinkProps {
@@ -9,7 +10,10 @@ export function TransactionLink({ txHash }: TransactionLinkProps) {
 
 	return (
 		<div className="mt-4 p-4 bg-muted rounded-lg">
-			<p className="text-sm text-muted-foreground mb-2">트랜잭션 해시:</p>
+			<div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+				<Link2 className="size-5" />
+				<p>트랜잭션 해시</p>
+			</div>
 			<Link
 				href={`https://sepolia.etherscan.io/tx/${txHash}`}
 				target="_blank"
@@ -20,4 +24,3 @@ export function TransactionLink({ txHash }: TransactionLinkProps) {
 		</div>
 	);
 }
-
