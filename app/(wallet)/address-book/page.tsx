@@ -1,0 +1,91 @@
+"use client";
+
+import { useAddressBookStore } from "../store/address-book";
+import { useState } from "react";
+import { SearchInput } from "./components/SearchInput";
+import { AddNewButton } from "./components/AddNewButton";
+import { AddAddressForm } from "./components/AddAddressForm";
+import { AddressList } from "./components/AddressList";
+
+export default function AddressBookPage() {
+	const [keyword, setKeyword] = useState("");
+	const [address, setAddress] = useState("");
+	const [mode, setMode] = useState<"add" | "search">("search");
+	const [editingOriginalName, setEditingOriginalName] = useState("");
+	const [editName, setEditName] = useState("");
+	const [editAddress, setEditAddress] = useState("");
+	const addressBookStore = useAddressBookStore();
+
+	const handleSearchChange = (value: string) => {
+		setMode("search");
+		setEditingOriginalName("");
+		setKeyword(value);
+	};
+
+	const handleAddButtonClick = () => {
+		setMode("add");
+	};
+
+	const handleAdd = () => {
+		addressBookStore.addAddress(keyword, address);
+		setKeyword("");
+		setAddress("");
+		setMode("search");
+	};
+
+	const handleRemove = (name: string) => {
+		addressBookStore.removeAddress(name);
+	};
+
+	const handleEditClick = (name: string, address: string) => {
+		setEditingOriginalName(name);
+		setEditName(name);
+		setEditAddress(address);
+	};
+
+	const handleEditSave = () => {
+		if (editingOriginalName !== editName) {
+			addressBookStore.removeAddress(editingOriginalName);
+		}
+		addressBookStore.addAddress(editName, editAddress);
+		setEditingOriginalName("");
+		setEditName("");
+		setEditAddress("");
+	};
+
+	const filteredEntries = Object.entries(addressBookStore.addressBook).filter(([name]) =>
+		keyword.length > 0 ? name.includes(keyword) : true
+	);
+
+	const showAddButton =
+		keyword.length > 0 && mode === "search" && !addressBookStore.addressBook[keyword];
+
+	return (
+		<div className="flex flex-col gap-4 h-full">
+			<SearchInput value={keyword} onChange={handleSearchChange} />
+
+			{showAddButton && <AddNewButton keyword={keyword} onClick={handleAddButtonClick} />}
+
+			{mode === "add" && (
+				<AddAddressForm
+					keyword={keyword}
+					address={address}
+					onAddressChange={setAddress}
+					onSubmit={handleAdd}
+				/>
+			)}
+
+			<AddressList
+				entries={filteredEntries}
+				editingOriginalName={editingOriginalName}
+				editName={editName}
+				editAddress={editAddress}
+				onEditNameChange={setEditName}
+				onEditAddressChange={setEditAddress}
+				onEditClick={handleEditClick}
+				onEditSave={handleEditSave}
+				onRemove={handleRemove}
+			/>
+		</div>
+	);
+}
