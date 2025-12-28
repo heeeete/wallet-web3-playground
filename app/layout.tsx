@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
+import { Toaster } from "@/components/ui/sonner";
 
 import { Providers } from "./providers";
 import Header from "@/components/layouts/Header";
@@ -34,6 +35,7 @@ export default function RootLayout({
 					<Header />
 					{children}
 				</Providers>
+				<Toaster />
 			</body>
 		</html>
 	);

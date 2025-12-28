@@ -24,7 +24,7 @@ export function AddAddressForm({
 				onChange={(e) => onAddressChange(e.target.value)}
 				placeholder="주소를 입력하세요"
 			/>
-			<Button onClick={onSubmit} className="w-full">
+			<Button onClick={onSubmit} variant="submit" className="w-full" size={"lg"}>
 				추가
 			</Button>
 		</div>
