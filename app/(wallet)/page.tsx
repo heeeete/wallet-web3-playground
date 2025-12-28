@@ -18,6 +18,7 @@ import { useAccount, useBalance, useSendTransaction, useWaitForTransactionReceip
 import { parseEther, formatEther, isAddress } from "viem";
 import Link from "next/link";
 import { ArrowDown } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Home() {
 	const { address } = useAccount();
@@ -120,9 +121,12 @@ export default function Home() {
 						)}
 					/>
 					<Button type="submit" disabled={isPending}>
-						{uiState === "wallet" && "지갑에서 확인 중..."}
-						{uiState === "confirming" && "확정 대기 중..."}
-						{uiState === "idle" && "전송"}
+						{(uiState === "wallet" || uiState === "confirming") && <Spinner />}
+						{uiState === "wallet"
+							? "지갑에서 확인 중..."
+							: uiState === "confirming"
+							? "확정 대기 중..."
+							: "전송"}
 					</Button>
 				</form>
 			</Form>
