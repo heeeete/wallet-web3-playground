@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Check, Edit, MapPinHouse, Trash, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ButtonGroup } from "@/components/ui/button-group";
 
 interface AddressItemProps {
 	name: string;
@@ -53,14 +54,16 @@ export function AddressItem({
 					/>
 				</p>
 			</div>
-			<div className="flex gap-2">
-				<Button onClick={onRemove} variant="destructive" size="icon">
-					<Trash />
-				</Button>
+			{/* <div className="flex gap-2"> */}
+			<ButtonGroup>
 				<Button onClick={isEditing ? onEditSave : onEditClick} size="icon">
 					{isEditing ? <Check /> : <Edit />}
 				</Button>
-			</div>
+				<Button onClick={onRemove} variant="destructive" size="icon">
+					<Trash />
+				</Button>
+			</ButtonGroup>
+			{/* </div> */}
 		</div>
 	);
 }

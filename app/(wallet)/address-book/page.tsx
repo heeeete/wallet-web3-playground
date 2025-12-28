@@ -6,6 +6,7 @@ import { SearchInput } from "./_components/SearchInput";
 import { AddNewButton } from "./_components/AddNewButton";
 import { AddAddressForm } from "./_components/AddAddressForm";
 import { AddressList } from "./_components/AddressList";
+import { toast } from "sonner";
 
 export default function AddressBookPage() {
 	const [keyword, setKeyword] = useState("");
@@ -31,6 +32,7 @@ export default function AddressBookPage() {
 		setKeyword("");
 		setAddress("");
 		setMode("search");
+		toast.success("주소가 추가되었습니다.");
 	};
 
 	const handleRemove = (name: string) => {
@@ -44,6 +46,10 @@ export default function AddressBookPage() {
 	};
 
 	const handleEditSave = () => {
+		if (addressBookStore.addressBook[editName]) {
+			toast.error("이미 존재하는 주소입니다.");
+			return;
+		}
 		if (editingOriginalName !== editName) {
 			addressBookStore.removeAddress(editingOriginalName);
 		}
