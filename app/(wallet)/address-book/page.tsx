@@ -2,10 +2,10 @@
 
 import { useAddressBookStore } from "../store/address-book";
 import { useState } from "react";
-import { SearchInput } from "./components/SearchInput";
-import { AddNewButton } from "./components/AddNewButton";
-import { AddAddressForm } from "./components/AddAddressForm";
-import { AddressList } from "./components/AddressList";
+import { SearchInput } from "./_components/SearchInput";
+import { AddNewButton } from "./_components/AddNewButton";
+import { AddAddressForm } from "./_components/AddAddressForm";
+import { AddressList } from "./_components/AddressList";
 
 export default function AddressBookPage() {
 	const [keyword, setKeyword] = useState("");
