@@ -1,6 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { ControllerRenderProps } from "react-hook-form";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 interface RecipientFieldProps {
 	field: ControllerRenderProps<
@@ -13,6 +15,14 @@ interface RecipientFieldProps {
 }
 
 export function RecipientField({ field }: RecipientFieldProps) {
+	const searchParams = useSearchParams();
+	const getAddress = searchParams.get("address");
+
+	useEffect(() => {
+		if (getAddress) {
+			field.onChange(getAddress);
+		}
+	}, []);
 	return (
 		<FormItem className="border p-4 rounded-3xl">
 			<FormLabel>
