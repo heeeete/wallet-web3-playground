@@ -11,7 +11,8 @@ const queryClient = new QueryClient();
 
 function RainbowKitWithTheme({ children }: { children: React.ReactNode }) {
 	const { resolvedTheme } = useTheme(); // 'light' | 'dark'
-	const rkTheme = resolvedTheme === "dark" ? darkTheme() : lightTheme();
+	// const rkTheme = resolvedTheme === "dark" ? darkTheme() : lightTheme();
+	const rkTheme = darkTheme();
 
 	return (
 		<RainbowKitProvider coolMode theme={rkTheme}>
@@ -22,7 +23,7 @@ function RainbowKitWithTheme({ children }: { children: React.ReactNode }) {
 
 export function Providers({ children }: { children: React.ReactNode }) {
 	return (
-		<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+		<ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
 			<WagmiProvider config={wagmiConfig}>
 				<QueryClientProvider client={queryClient}>
 					<RainbowKitWithTheme>{children}</RainbowKitWithTheme>

@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Header() {
 	return (
-		<header className="flex items-center justify-between px-4 h-20">
+		<header className="flex items-center justify-between px-4 h-header">
 			<h1>
 				<Link href="/" aria-label="Wallet">
 					<Image src="/logo.png" alt="Wallet logo" width={200} height={58} priority />
