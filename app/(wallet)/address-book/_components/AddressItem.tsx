@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Check, Edit, MapPinHouse, Trash, User } from "lucide-react";
+import { Check, Edit, MapPinHouse, Send, Trash, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { useRouter } from "next/navigation";
 
 interface AddressItemProps {
 	name: string;
@@ -28,6 +29,10 @@ export function AddressItem({
 	onEditSave,
 	onRemove,
 }: AddressItemProps) {
+	const router = useRouter();
+	const handleSendClick = () => {
+		router.push(`/?address=${encodeURIComponent(address)}`);
+	};
 	return (
 		<div className="flex justify-between items-center">
 			<div className="flex flex-col gap-1 w-full">
@@ -56,10 +61,13 @@ export function AddressItem({
 			</div>
 			{/* <div className="flex gap-2"> */}
 			<ButtonGroup>
-				<Button onClick={isEditing ? onEditSave : onEditClick} size="icon">
+				<Button onClick={handleSendClick} variant={"outline"} size="icon">
+					{<Send />}
+				</Button>
+				<Button onClick={isEditing ? onEditSave : onEditClick} variant={"outline"} size="icon">
 					{isEditing ? <Check /> : <Edit />}
 				</Button>
-				<Button onClick={onRemove} variant="destructive" size="icon">
+				<Button onClick={onRemove} variant={"outline"} size="icon">
 					<Trash />
 				</Button>
 			</ButtonGroup>
