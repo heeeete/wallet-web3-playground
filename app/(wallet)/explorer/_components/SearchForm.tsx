@@ -2,21 +2,26 @@
 
 import { useState } from "react";
 
+import { getCoinPrice, getDollarRate } from "@/lib/api";
 import { SearchIcon } from "lucide-react";
 import { toast } from "sonner";
 import { getAddress, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { mainnet, polygon } from "wagmi/chains";
 
 import { Button } from "@/components/ui/button";
 
-import { SearchResult } from "../type";
+import { SearchResultType } from "../type";
 import ChainSelect from "./ChainSelect";
 
 export default function SearchForm({
+    setIsLoading,
     setSearchResult,
+    isLoading,
 }: {
-    setSearchResult: React.Dispatch<React.SetStateAction<SearchResult | null>>;
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    setSearchResult: React.Dispatch<React.SetStateAction<SearchResultType | null>>;
+    isLoading: boolean;
 }) {
     const [selectedChainId, setSelectedChainId] = useState<number>(mainnet.id);
     const publicClient = usePublicClient({ chainId: selectedChainId });
@@ -37,27 +42,34 @@ export default function SearchForm({
             return;
         }
 
-        const address = getAddress(search);
+        setIsLoading(true);
 
-        const [code, balance, count, dollar] = await Promise.all([
-            publicClient.getCode({ address }),
-            publicClient.getBalance({ address }),
-            publicClient.getTransactionCount({ address }),
-            fetch(
-                `https://m.search.naver.com/p/csearch/content/qapirender.nhn?key=calculator&pkid=141&q=%ED%99%98%EC%9C%A8&where=m&u1=keb&u6=standardUnit&u7=0&u3=USD&u4=KRW&u8=down&u2=1`
-            ),
-        ]);
+        try {
+            const address = getAddress(search);
 
-        const dollarResponse = await dollar.json();
+            const [code, balance, count, dollar, coinPriceKRW] = await Promise.all([
+                publicClient.getCode({ address }),
+                publicClient.getBalance({ address }),
+                publicClient.getTransactionCount({ address }),
+                getDollarRate(),
+                getCoinPrice(selectedChainId === polygon.id ? "POL" : "ETH"),
+            ]);
 
-        setSearchResult({
-            address,
-            balance,
-            isContract: code !== undefined,
-            code,
-            count,
-            dollar: Number(dollarResponse.country[1].value.replace(/,/g, "")),
-        });
+            setSearchResult({
+                address,
+                balance,
+                isContract: code !== undefined,
+                code,
+                count,
+                dollar,
+                chainId: selectedChainId,
+                coinPriceKRW,
+            });
+        } catch {
+            toast.error("검색 중 오류가 발생했습니다.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -67,16 +79,23 @@ export default function SearchForm({
                     type="text"
                     name="search"
                     placeholder="0x5123..."
-                    className="flex-1 h-full px-2 rounded-2xl"
+                    className="flex-1 h-full px-2 rounded-xl outline-none"
+                    disabled={isLoading}
                 />
                 <ChainSelect
                     selectedChainId={selectedChainId}
                     setSelectedChainId={setSelectedChainId}
                 />
             </div>
-            <Button type="submit" className="h-full rounded-xl w-15">
-                <SearchIcon className="size-6" />
+            <Button type="submit" className="h-full rounded-xl w-15" disabled={isLoading}>
+                {isLoading ? (
+                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent" />
+                ) : (
+                    <SearchIcon className="size-6" />
+                )}
             </Button>
         </form>
     );
 }
+
+function getDollar() {}
