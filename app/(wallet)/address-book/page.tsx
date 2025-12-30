@@ -1,6 +1,6 @@
 "use client";
 
-import { useAddressBookStore } from "../store/address-book";
+import { useAddressBookStore } from "@/store/address-book";
 import { useState } from "react";
 import { SearchInput } from "./_components/SearchInput";
 import { AddNewButton } from "./_components/AddNewButton";

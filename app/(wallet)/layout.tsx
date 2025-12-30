@@ -1,6 +1,6 @@
 import React from "react";
 
-import Nav from "./components/layouts/Nav";
+import Nav from "./_shared/Nav";
 
 export default function WalletLayout({ children }: { children: React.ReactNode }) {
     return (

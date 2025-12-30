@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowDown, WalletIcon } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { formatEther, parseEther } from "viem";
@@ -12,11 +12,12 @@ import { useAccount, useBalance, useSendTransaction } from "wagmi";
 import { Form, FormField } from "@/components/ui/form";
 
 import { AmountField } from "./_components/AmountField";
+import { NotConnected } from "./_components/NotConnected";
 import { RecipientField } from "./_components/RecipientField";
 import { SubmitButton } from "./_components/SubmitButton";
 import { TransactionLink } from "./_components/TransactionLink";
-import { TransferFormData, createTransferFormSchema } from "./_components/transferFormSchema";
-import { useTransactionState } from "./_components/useTransactionState";
+import { useTransactionState } from "./_hooks/useTransactionState";
+import { TransferFormData, createTransferFormSchema } from "./_lib/transferFormSchema";
 
 export default function Home() {
     const { address } = useAccount();
@@ -51,14 +52,7 @@ export default function Home() {
     }, [uiState]);
 
     if (!address) {
-        return (
-            <div>
-                <p>
-                    <WalletIcon className="size-10" />
-                </p>
-                <p>지갑을 연결해주세요.</p>
-            </div>
-        );
+        return <NotConnected />;
     }
 
     return (

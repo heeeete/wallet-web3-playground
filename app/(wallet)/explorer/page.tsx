@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import SearchForm from "./_components/SearchForm";
 import SearchResult from "./_components/SearchResult";
-import { SearchResultType } from "./type";
+import { SearchResultType } from "./_lib/types";
 
 export default function ExplorerPage() {
     const [searchResult, setSearchResult] = useState<SearchResultType | null>(null);

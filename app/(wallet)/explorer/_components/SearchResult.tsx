@@ -5,7 +5,7 @@ import { formatEther } from "viem";
 
 import { Spinner } from "@/components/ui/spinner";
 
-import { SearchResultType } from "../type";
+import { SearchResultType } from "../_lib/types";
 
 export default function SearchResult({
     searchResult,
