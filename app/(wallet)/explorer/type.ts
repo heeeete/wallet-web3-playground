@@ -1,0 +1,10 @@
+export interface SearchResultType {
+    address: string;
+    balance: bigint;
+    isContract: boolean;
+    code: string | undefined;
+    count: number;
+    dollar: number;
+    chainId: number;
+    coinPriceKRW: number;
+}
