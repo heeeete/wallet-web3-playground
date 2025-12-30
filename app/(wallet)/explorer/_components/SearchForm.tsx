@@ -11,7 +11,7 @@ import { mainnet, polygon } from "wagmi/chains";
 
 import { Button } from "@/components/ui/button";
 
-import { SearchResultType } from "../type";
+import { SearchResultType } from "../_lib/types";
 import ChainSelect from "./ChainSelect";
 
 export default function SearchForm({
