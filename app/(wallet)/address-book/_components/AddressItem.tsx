@@ -76,7 +76,6 @@ export function AddressItem({
                     />
                 </p>
             </div>
-            {/* <div className="flex gap-2"> */}
             <ButtonGroup>
                 <Button onClick={handleSendClick} variant={"outline"} size="icon">
                     <Send />
@@ -95,7 +94,6 @@ export function AddressItem({
                     <Trash />
                 </Button>
             </ButtonGroup>
-            {/* </div> */}
         </div>
     );
 }
