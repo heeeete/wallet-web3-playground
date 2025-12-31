@@ -15,9 +15,16 @@ export async function getDollarRate(): Promise<number> {
  * @param symbol - 코인 심볼
  * @returns 코인 가격
  */
-export async function getCoinPrice(symbol: "ETH" | "POL"): Promise<number> {
-    const response = await fetch(`https://api.upbit.com/v1/ticker?markets=KRW-${symbol}`);
-    const data = await response.json();
+export async function getCoinPrice(symbol: "ETH" | "POL"): Promise<{ krw: number; usdt: number }> {
+    const [krw, usdt] = await Promise.all([
+        fetch(`https://api.upbit.com/v1/ticker?markets=KRW-${symbol}`),
+        fetch(`https://api.upbit.com/v1/ticker?markets=USDT-${symbol}`),
+    ]);
+    const krwData = await krw.json();
+    const usdtData = await usdt.json();
 
-    return data[0].trade_price;
+    return {
+        krw: krwData[0].trade_price,
+        usdt: usdtData[0].trade_price,
+    };
 }

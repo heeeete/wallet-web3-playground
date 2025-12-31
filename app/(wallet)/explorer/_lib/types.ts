@@ -4,7 +4,8 @@ export interface SearchResultType {
     isContract: boolean;
     code: string | undefined;
     count: number;
-    dollar: number;
+    dollarRate: number;
     chainId: number;
     coinPriceKRW: number;
+    coinPriceUSDT: number;
 }

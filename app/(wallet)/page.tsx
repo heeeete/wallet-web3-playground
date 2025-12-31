@@ -6,14 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { formatEther, parseEther, parseGwei } from "viem";
-import {
-    useAccount,
-    useBalance,
-    useEstimateFeesPerGas,
-    usePublicClient,
-    useSendTransaction,
-} from "wagmi";
+import { formatEther, parseEther } from "viem";
+import { useAccount, useBalance, usePublicClient, useSendTransaction } from "wagmi";
 
 import { Form, FormField } from "@/components/ui/form";
 
@@ -97,7 +91,7 @@ export default function Home() {
                 </form>
             </Form>
 
-            <TransactionLink txHash={txHash} />
+            <TransactionLink txHash={txHash} chainId={chainId!} />
         </div>
     );
 }

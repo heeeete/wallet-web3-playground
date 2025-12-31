@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useWalletSignIn } from "@/hooks/useWalletSignIn";
 import { getCoinPrice, getDollarRate } from "@/lib/api";
 import { SearchIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -23,6 +24,7 @@ export default function SearchForm({
     setSearchResult: React.Dispatch<React.SetStateAction<SearchResultType | null>>;
     isLoading: boolean;
 }) {
+    const { signReset } = useWalletSignIn();
     const [selectedChainId, setSelectedChainId] = useState<number>(mainnet.id);
     const publicClient = usePublicClient({ chainId: selectedChainId });
 
@@ -47,7 +49,7 @@ export default function SearchForm({
         try {
             const address = getAddress(search);
 
-            const [code, balance, count, dollar, coinPriceKRW] = await Promise.all([
+            const [code, balance, count, dollarRate, { krw, usdt }] = await Promise.all([
                 publicClient.getCode({ address }),
                 publicClient.getBalance({ address }),
                 publicClient.getTransactionCount({ address }),
@@ -61,10 +63,12 @@ export default function SearchForm({
                 isContract: code !== undefined,
                 code,
                 count,
-                dollar,
+                dollarRate,
                 chainId: selectedChainId,
-                coinPriceKRW,
+                coinPriceKRW: krw,
+                coinPriceUSDT: usdt,
             });
+            signReset();
         } catch {
             toast.error("검색 중 오류가 발생했습니다.");
         } finally {
@@ -97,5 +101,3 @@ export default function SearchForm({
         </form>
     );
 }
-
-function getDollar() {}
