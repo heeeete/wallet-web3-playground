@@ -7,7 +7,7 @@ import { ArrowDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { formatEther, parseEther } from "viem";
-import { useAccount, useBalance, useSendTransaction } from "wagmi";
+import { useAccount, useBalance, usePublicClient, useSendTransaction } from "wagmi";
 
 import { Form, FormField } from "@/components/ui/form";
 
@@ -20,10 +20,10 @@ import { useTransactionState } from "./_hooks/useTransactionState";
 import { TransferFormData, createTransferFormSchema } from "./_lib/transferFormSchema";
 
 export default function Home() {
-    const { address } = useAccount();
+    const { address, chainId } = useAccount();
     const balance = useBalance({ address });
     const maxAmount = balance.data?.value ? Number(formatEther(balance.data.value)) : undefined;
-
+    const publicClient = usePublicClient({ chainId });
     const formSchema = createTransferFormSchema(maxAmount);
     const { data: txHash, sendTransaction, isPending } = useSendTransaction();
     const { uiState } = useTransactionState({ txHash, isPending });
@@ -36,20 +36,31 @@ export default function Home() {
         },
     });
 
-    const onSubmit = (data: TransferFormData) => {
+    const onSubmit = async (data: TransferFormData) => {
+        if (!publicClient) return;
+
+        const feeValues = await publicClient.estimateFeesPerGas();
+
+        const maxPriorityFeePerGas = feeValues.maxPriorityFeePerGas;
+        const maxFeePerGas = feeValues.maxFeePerGas;
+
         sendTransaction({
             to: data.recipient as `0x${string}`,
             value: parseEther(data.amount.toString()),
+            maxFeePerGas,
+            maxPriorityFeePerGas,
         });
     };
 
     useEffect(() => {
         if (uiState === "success") {
             toast.success("트랜잭션이 성공적으로 완료되었습니다.");
+            balance.refetch(); // 잔액 새로고침
+            form.reset(); // 폼 초기화
         } else if (uiState === "error") {
             toast.error("트랜잭션이 실패했습니다.");
         }
-    }, [uiState]);
+    }, [uiState, form]);
 
     if (!address) {
         return <NotConnected />;
@@ -66,7 +77,9 @@ export default function Home() {
                     <FormField
                         control={form.control}
                         name="amount"
-                        render={({ field }) => <AmountField field={field} maxAmount={maxAmount} />}
+                        render={({ field }) => (
+                            <AmountField field={field} maxAmount={maxAmount} uiState={uiState} />
+                        )}
                     />
 
                     <ArrowDown className="mx-auto text-main" />
@@ -74,14 +87,14 @@ export default function Home() {
                     <FormField
                         control={form.control}
                         name="recipient"
-                        render={({ field }) => <RecipientField field={field} />}
+                        render={({ field }) => <RecipientField field={field} uiState={uiState} />}
                     />
 
                     <SubmitButton uiState={uiState} isPending={isPending} />
                 </form>
             </Form>
 
-            <TransactionLink txHash={txHash} />
+            <TransactionLink txHash={txHash} chainId={chainId!} />
         </div>
     );
 }

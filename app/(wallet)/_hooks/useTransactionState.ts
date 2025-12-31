@@ -1,6 +1,6 @@
 import { useWaitForTransactionReceipt } from "wagmi";
 
-type UiTxState = "idle" | "wallet" | "submitted" | "confirming" | "success" | "error";
+export type UiTxState = "idle" | "wallet" | "submitted" | "confirming" | "success" | "error";
 
 interface UseTransactionStateParams {
     txHash?: `0x${string}`;

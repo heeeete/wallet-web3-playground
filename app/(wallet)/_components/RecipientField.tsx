@@ -6,6 +6,8 @@ import { ControllerRenderProps } from "react-hook-form";
 import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import { UiTxState } from "../_hooks/useTransactionState";
+
 interface RecipientFieldProps {
     field: ControllerRenderProps<
         {
@@ -14,9 +16,10 @@ interface RecipientFieldProps {
         },
         "recipient"
     >;
+    uiState: UiTxState;
 }
 
-export function RecipientField({ field }: RecipientFieldProps) {
+export function RecipientField({ field, uiState }: RecipientFieldProps) {
     const searchParams = useSearchParams();
     const getAddress = searchParams.get("address");
 
@@ -33,7 +36,12 @@ export function RecipientField({ field }: RecipientFieldProps) {
                 </div>
             </FormLabel>
             <FormControl>
-                <Input value={field.value} onChange={field.onChange} placeholder="0x1cA...D152" />
+                <Input
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="0x1cA...D152"
+                    disabled={uiState === "wallet" || uiState === "confirming"}
+                />
             </FormControl>
             <FormMessage />
         </FormItem>
