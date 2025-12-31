@@ -6,8 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { formatEther, parseEther } from "viem";
-import { useAccount, useBalance, useSendTransaction } from "wagmi";
+import { formatEther, parseEther, parseGwei } from "viem";
+import {
+    useAccount,
+    useBalance,
+    useEstimateFeesPerGas,
+    usePublicClient,
+    useSendTransaction,
+} from "wagmi";
 
 import { Form, FormField } from "@/components/ui/form";
 
@@ -20,13 +26,14 @@ import { useTransactionState } from "./_hooks/useTransactionState";
 import { TransferFormData, createTransferFormSchema } from "./_lib/transferFormSchema";
 
 export default function Home() {
-    const { address } = useAccount();
+    const { address, chainId } = useAccount();
     const balance = useBalance({ address });
     const maxAmount = balance.data?.value ? Number(formatEther(balance.data.value)) : undefined;
-
+    const publicClient = usePublicClient({ chainId });
     const formSchema = createTransferFormSchema(maxAmount);
     const { data: txHash, sendTransaction, isPending } = useSendTransaction();
     const { uiState } = useTransactionState({ txHash, isPending });
+    console.log(uiState);
 
     const form = useForm<TransferFormData>({
         resolver: zodResolver(formSchema),
@@ -36,10 +43,19 @@ export default function Home() {
         },
     });
 
-    const onSubmit = (data: TransferFormData) => {
+    const onSubmit = async (data: TransferFormData) => {
+        if (!publicClient) return;
+
+        const feeValues = await publicClient.estimateFeesPerGas();
+
+        const maxPriorityFeePerGas = feeValues.maxPriorityFeePerGas;
+        const maxFeePerGas = feeValues.maxFeePerGas;
+
         sendTransaction({
             to: data.recipient as `0x${string}`,
             value: parseEther(data.amount.toString()),
+            maxFeePerGas,
+            maxPriorityFeePerGas,
         });
     };
 

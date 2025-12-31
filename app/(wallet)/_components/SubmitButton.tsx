@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
-type UiTxState = "idle" | "wallet" | "submitted" | "confirming" | "success" | "error";
+import { type UiTxState } from "../_hooks/useTransactionState";
 
 interface SubmitButtonProps {
     uiState: UiTxState;
@@ -23,7 +23,12 @@ export function SubmitButton({ uiState, isPending }: SubmitButtonProps) {
     };
 
     return (
-        <Button variant="submit" size="lg" type="submit" disabled={isPending}>
+        <Button
+            variant="submit"
+            size="lg"
+            type="submit"
+            disabled={uiState === "wallet" || uiState === "confirming"}
+        >
             {isLoading && <Spinner />}
             {getButtonText()}
         </Button>
