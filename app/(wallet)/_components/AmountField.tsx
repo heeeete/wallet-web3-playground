@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import { UiTxState } from "../_hooks/useTransactionState";
+
 interface AmountFieldProps {
     field: ControllerRenderProps<
         {
@@ -13,9 +15,10 @@ interface AmountFieldProps {
         "amount"
     >;
     maxAmount?: number;
+    uiState: UiTxState;
 }
 
-export function AmountField({ field, maxAmount }: AmountFieldProps) {
+export function AmountField({ field, maxAmount, uiState }: AmountFieldProps) {
     const handleMaxBtn = () => {
         if (maxAmount !== undefined) {
             field.onChange(maxAmount);
@@ -43,12 +46,14 @@ export function AmountField({ field, maxAmount }: AmountFieldProps) {
                             )
                         }
                         placeholder="0.0001"
+                        disabled={uiState === "wallet" || uiState === "confirming"}
                     />
                     <Button
                         onClick={handleMaxBtn}
                         variant="outline"
                         type="button"
                         className="text-main font-semibold border-none"
+                        disabled={uiState === "wallet" || uiState === "confirming"}
                     >
                         MAX
                     </Button>
