@@ -1,6 +1,6 @@
 # Wallet (Web3 Playground)
 
-Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지갑형 프론트엔드 사이드 프로젝트**입니다.  
+Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지갑 dApp**입니다.  
 **지갑 연결, 코인 전송, 주소록, 주소/컨트랙트 탐색(Explorer)** 기능을 구현했습니다.
 
 ---
@@ -19,8 +19,8 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
 - 전송 상태 UX 분리
     - **요청(pending)**: 지갑에서 서명/승인 대기
     - **컨펌(confirming)**: 블록에 포함될 때까지 대기
-    - **성공/실패**: receipt 기반 결과 표시
-- Etherscan 트랜잭션 링크 제공
+    - **성공/실패**: wagmi에서 제공하는 트랜잭션 상태를 기반으로 결과 표시
+- 각 체인의 트랜잭션 조회 링크 제공
 - 트랜잭션 무한 Pending 방지
     - wagmi 기본값 대신 **`viem estimateFeesPerGas`** 로 가스비 사전 산정
 
@@ -110,10 +110,10 @@ project/
 
 확인해 보니, 기본값으로 설정된 **maxFeePerGas가 당시 네트워크 baseFee보다 낮아 블록에 포함되기 어려운 수수료 조건**이 되는 케이스가 있었다. 이 문제는 **estimateFeesPerGas()** 로 블록 포함 가능성이 높은 수수료를 추정해 **maxFeePerGas/maxPriorityFeePerGas**를 명시적으로 넣는 방식으로 완화했다. 
 
-그 과정에서 baseFee, maxPriorityFeePerGas, maxFeePerGas의 역할을 실제로 이해하게 됐다.
+그 과정에서 baseFee, maxPriorityFeePerGas, maxFeePerGas의 역할을 이해하게 됐다.
 
 Explorer 페이지에서는 별도의 회원가입/로그인 없이도, **메시지 서명과 검증(signMessageAsync -> verifyMessage)** 으로 **본인 소유 주소**를 증명할 수 있다는 점이 새로웠다. 또한 주소는 단순 문자열이 아니라, **EOA 인지 컨트랙트인지** 에 따라 동작과 검증 방식이 달라진다는 것도 배웠다.
 
-처음 접하는 개념이 많아 쉽진 않았지만, 매 단계에서 생긴 질문을 직접 확인하며 배워나갈 수 있어 오래 기억에 남을 사이드 프로젝트였다.
+처음 접하는 개념이 많아 쉽진 않았지만, 매 단계에서 생긴 의문을 직접 확인하며 배워나갈 수 있어 오래 기억에 남을 사이드 프로젝트였다.
 
 다음 단계로는, 노드(JSON-RPC)만으로는 주소별 트랜잭션 히스토리를 바로 얻기 어렵다는 점을 고려해, Explorer API(Etherscan/Blockscout 등) 연동으로 txList 조회 기능을 추가해보고 싶다.
