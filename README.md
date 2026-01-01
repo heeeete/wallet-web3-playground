@@ -58,6 +58,26 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
 
 ---
 
+## 프로젝트 진행 중 발생한 에러
+
+- 배포 후 브라우저에서 **Upbit 시세 API를 직접 호출**할 때 아래 **오류가 발생**했다.
+    - 에러 내용
+        - Access to fetch at 'https://api.upbit.com/v1/ticker?markets=KRW-ETH' from origin 'https://wallet-web3-playground.vercel.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+        - GET https://api.upbit.com/v1/ticker?markets=KRW-ETH net::ERR_FAILED 429 (Too Many Requests)
+    - 에러 해석
+        - CORS 차단과 429 응답이 동시에 나고 있다
+        - 헤더를 보니 오리진마다 제한이 있는 걸로 확인 `(limit-by-origin : yes)`
+    - 해결 방법 1)
+        - **Upbit 시세 API 호출을 Next.js API Route로 요청해 봤다.**
+            - 결과는 200 응답
+            - **CORS는 브라우저에서만 적용되는 정책이므로, API Route(서버)에서 Upbit를 호출하면 브라우저 CORS 차단이 발생하지 않는다.**
+    - 해결 방법 2)
+        - Upbit API를 기존에 KRW-ETH / USDT-ETH 총 2번 호출했다. 알아보니 콤마로 구분해 한 번에 여러 시세를 받을 수 있었다.
+    - 최종 해결
+        - 위 1, 2번 방법을 동시에 적용
+
+---
+
 ## 지원 네트워크(Chains)
 
 - Sepolia (테스트넷)

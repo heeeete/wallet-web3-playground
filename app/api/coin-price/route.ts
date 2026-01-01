@@ -15,21 +15,16 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const [krw, usdt] = await Promise.all([
-            fetch(`https://api.upbit.com/v1/ticker?markets=KRW-${symbol}`, {
-                cache: "no-store",
-            }),
-            fetch(`https://api.upbit.com/v1/ticker?markets=USDT-${symbol}`, {
-                cache: "no-store",
-            }),
-        ]);
+        const response = await fetch(
+            `https://api.upbit.com/v1/ticker?markets=KRW-${symbol},USDT-${symbol}`,
+            { cache: "no-store" }
+        );
 
-        const krwData = await krw.json();
-        const usdtData = await usdt.json();
+        const data = await response.json();
 
         return NextResponse.json({
-            krw: krwData[0].trade_price,
-            usdt: usdtData[0].trade_price,
+            krw: data[0].trade_price,
+            usdt: data[1].trade_price,
         });
     } catch {
         return NextResponse.json({ error: "코인 가격을 가져오는데 실패했습니다" }, { status: 500 });
