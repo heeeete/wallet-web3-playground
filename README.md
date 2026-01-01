@@ -33,11 +33,11 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
 
 ### 4) Explorer (Address Lookup)
 <img width="1498" height="945" alt="localhost_3000_explorer" src="https://github.com/user-attachments/assets/9f498f78-0c28-459b-be53-908726f4f1ed" />
-주소를 입력하면 아래 정보를 조회해 보여줍니다.
 
-- **본인 확인 기능본인
-<img width="1137" height="721" alt="image" src="https://github.com/user-attachments/assets/7e90f832-3ac5-489a-b11e-02ad18424a9c" />
+주소를 입력하면 정보를 조회해 보여줍니다.
 
+- **본인 확인 기능본인**
+<img width="500" height="auto" alt="image" src="https://github.com/user-attachments/assets/7e90f832-3ac5-489a-b11e-02ad18424a9c" />
     - `useWalletSignIn` 커스텀 훅으로 메시지 서명 + 검증
     - `signMessageAsync`로 지갑 서명 요청 → `verifyMessage`로 서명 검증
     - 조회 주소가 본인 소유임을 증명
