@@ -15,7 +15,7 @@ export function TransactionLink({ txHash, chainId }: TransactionLinkProps) {
     const txUrl = `${explorerUrl}/tx/${txHash}`;
 
     return (
-        <div className="mt-4 p-4 bg-muted rounded-lg">
+        <div className="mt-4 px-4 py-2 bg-muted rounded-lg">
             <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
                 <Link2 className="size-5" />
                 <p>트랜잭션 해시</p>

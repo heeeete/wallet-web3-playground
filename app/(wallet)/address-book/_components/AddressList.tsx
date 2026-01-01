@@ -32,7 +32,7 @@ export function AddressList({
     }
 
     return (
-        <div className="flex flex-col gap-8 overflow-y-auto flex-1 pt-2">
+        <div className="flex flex-col gap-4 overflow-y-auto flex-1 pt-2">
             {entries
                 .sort((a, b) => a[0].localeCompare(b[0]))
                 .map(([name, address]) => (
