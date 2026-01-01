@@ -1,7 +1,10 @@
 # Wallet (Web3 Playground)
 
+사이트 주소 - https://wallet-web3-playground.vercel.app
+
 Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지갑 dApp**입니다.  
 **지갑 연결, 코인 전송, 주소록, 주소/컨트랙트 탐색(Explorer)** 기능을 구현했습니다.
+
 
 ---
 
