@@ -40,7 +40,7 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
     - `useWalletSignIn` 커스텀 훅으로 메시지 서명 + 검증
     - `signMessageAsync`로 지갑 서명 요청 → `verifyMessage`로 서명 검증
     - 조회 주소가 본인 소유임을 증명
-    
+
 <img width="500" height="auto" alt="image" src="https://github.com/user-attachments/assets/7e90f832-3ac5-489a-b11e-02ad18424a9c" />
 
 - **EOA / Contract 구분**
@@ -74,7 +74,7 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
 - **Next.js** (App Router)
 - **TypeScript**
 - **RainbowKit** (지갑 연결 UI)
-- **wagmi v2** (React hooks + 지갑/체인 상태)
+- **wagmi v2** (EVM 리액트 훅/액션)
 - **viem** (EVM RPC client)
 - **Zustand** (주소록 상태 관리)
 - **shadcn/ui + TailwindCSS** (UI)
@@ -100,3 +100,20 @@ project/
 ├─ lib/                          # 전역 공용 유틸/헬퍼
 └─ store/                        # 전역 상태 관리(Zustand)
 ```
+
+---
+
+## 회고
+짧은 사이드 프로젝트였지만, 첫 Web3 프로젝트였다. 구현하면서 자산 단위를 왜 BigInt로 다루는지(JS number 정밀도 한계와 오버플로우 방지) 이해했고, 노드와의 통신이 전형적인 REST 아키텍처 스타일보다 JSON-RPC 메서드 호출(eth_getBalance 등) 형태로 이뤄진다는 것도 자연스럽게 배웠다. 
+
+가장 헤맸던 건 가스(수수료) 모델이었다. 코인 전송을 만들고 나서 트랜잭션이 오래 pending 상태에 머물면, EOA 특성상 nonce가 밀려 다음 트랜잭션까지 연쇄적으로 대기하는 문제가 생겼다. 
+
+확인해 보니, 기본값으로 설정된 **maxFeePerGas가 당시 네트워크 baseFee보다 낮아 블록에 포함되기 어려운 수수료 조건**이 되는 케이스가 있었다. 이 문제는 **estimateFeesPerGas()** 로 블록 포함 가능성이 높은 수수료를 추정해 **maxFeePerGas/maxPriorityFeePerGas**를 명시적으로 넣는 방식으로 완화했다. 
+
+그 과정에서 baseFee, maxPriorityFeePerGas, maxFeePerGas의 역할을 실제로 이해하게 됐다.
+
+Explorer 페이지에서는 별도의 회원가입/로그인 없이도, **메시지 서명과 검증(signMessageAsync -> verifyMessage)** 으로 **본인 소유 주소**를 증명할 수 있다는 점이 새로웠다. 또한 주소는 단순 문자열이 아니라, **EOA 인지 컨트랙트인지** 에 따라 동작과 검증 방식이 달라진다는 것도 배웠다.
+
+처음 접하는 개념이 많아 쉽진 않았지만, 매 단계에서 생긴 질문을 직접 확인하며 배워나갈 수 있어 오래 기억에 남을 사이드 프로젝트였다.
+
+다음 단계로는, 노드(JSON-RPC)만으로는 주소별 트랜잭션 히스토리를 바로 얻기 어렵다는 점을 고려해, Explorer API(Etherscan/Blockscout 등) 연동으로 txList 조회 기능을 추가해보고 싶다.
