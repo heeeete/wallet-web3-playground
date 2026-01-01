@@ -13,27 +13,31 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
 - 연결 상태(주소, 체인) 기반으로 화면/기능 활성화
 
 ### 2) Send (가상자산 전송)
+<img width="1498" height="945" alt="localhost_3000_" src="https://github.com/user-attachments/assets/1c7ed760-1752-40ce-852b-9e3f1769ff45" />
 
 - 수신자 주소 + 금액 입력 후 트랜잭션 전송
 - 전송 상태 UX 분리
     - **요청(pending)**: 지갑에서 서명/승인 대기
-    - **컨펌(confirming)**: 체인 포함(채굴/확정) 대기
+    - **컨펌(confirming)**: 블록에 포함될 때까지 대기
     - **성공/실패**: receipt 기반 결과 표시
 - Etherscan 트랜잭션 링크 제공
 - 트랜잭션 무한 Pending 방지
     - wagmi 기본값 대신 **`viem estimateFeesPerGas`** 로 가스비 사전 산정
 
 ### 3) Address Book (Zustand)
+<img width="1498" height="945" alt="localhost_3000_ (1)" src="https://github.com/user-attachments/assets/20efcdc4-2481-4234-963d-599c7a4341a8" />
 
 - 자주 쓰는 주소를 저장/관리
 - 주소록에서 `Send` 버튼 클릭 시 Transfer 화면으로 이동하면서 **주소 자동 채움**
     - 방식: `/?address=0x...` (URL 기반)
 
 ### 4) Explorer (Address Lookup)
-
+<img width="1498" height="945" alt="localhost_3000_explorer" src="https://github.com/user-attachments/assets/9f498f78-0c28-459b-be53-908726f4f1ed" />
 주소를 입력하면 아래 정보를 조회해 보여줍니다.
 
-- **본인 확인 기능**
+- **본인 확인 기능본인
+<img width="1137" height="721" alt="image" src="https://github.com/user-attachments/assets/7e90f832-3ac5-489a-b11e-02ad18424a9c" />
+
     - `useWalletSignIn` 커스텀 훅으로 메시지 서명 + 검증
     - `signMessageAsync`로 지갑 서명 요청 → `verifyMessage`로 서명 검증
     - 조회 주소가 본인 소유임을 증명
