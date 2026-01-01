@@ -36,11 +36,13 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
 
 주소를 입력하면 정보를 조회해 보여줍니다.
 
-- **본인 확인 기능본인**
-<img width="500" height="auto" alt="image" src="https://github.com/user-attachments/assets/7e90f832-3ac5-489a-b11e-02ad18424a9c" />
+- **본인 확인 기능**
     - `useWalletSignIn` 커스텀 훅으로 메시지 서명 + 검증
     - `signMessageAsync`로 지갑 서명 요청 → `verifyMessage`로 서명 검증
     - 조회 주소가 본인 소유임을 증명
+    
+<img width="500" height="auto" alt="image" src="https://github.com/user-attachments/assets/7e90f832-3ac5-489a-b11e-02ad18424a9c" />
+
 - **EOA / Contract 구분**
     - `publicClient.getCode({ address })`
     - `code`가 존재하면 Contract, 없으면 EOA(viem은 code 없는 경우 `undefined` 반환)
