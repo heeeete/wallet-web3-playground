@@ -17,20 +17,33 @@ export default function ResultGrid({ searchResult }: { searchResult: SearchResul
         return chain?.nativeCurrency.symbol || "ETH";
     };
 
+    const cardBase =
+        "h-[150px] rounded-3xl border bg-background p-4 shadow-sm flex flex-col justify-between";
+    const cardCenter =
+        "h-[150px] rounded-3xl border bg-background p-4 shadow-sm flex flex-col items-center justify-center gap-3";
+    const label = "text-sm text-muted-foreground";
+    const value = "text-xl font-bold";
+
+    const chainSymbol = getChainSymbol(searchResult.chainId);
+    const nativeBalance = Number(formatEther(searchResult.balance)).toFixed(4);
+
     return (
         <div className="grid grid-cols-2 gap-5">
-            <div className="h-[150px] bg-background rounded-2xl flex flex-col items-center justify-center gap-5">
-                <p>
-                    <UserStarIcon className="size-10" />
-                </p>
-                <p className="font-bold">EOA 주소</p>
+            {/* EOA */}
+            <div className={cardCenter}>
+                <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-muted/30 text-muted-foreground">
+                    <UserStarIcon className="size-5" />
+                </span>
+                <p className="font-semibold">EOA 주소</p>
             </div>
+
+            {/* 서명 완료 / 서명 */}
             {signedIn ? (
-                <div className="h-[150px] bg-background rounded-2xl flex flex-col items-center justify-center gap-5 animate-shimmer">
-                    <p className="text-2xl font-bold">
-                        <BadgeCheckIcon className="size-10" />
-                    </p>
-                    <p className="font-bold">본인인증 완료</p>
+                <div className={cn(cardCenter, "animate-shimmer")}>
+                    <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-muted/30 text-muted-foreground">
+                        <BadgeCheckIcon className="size-5" />
+                    </span>
+                    <p className="font-semibold">본인인증 완료</p>
                 </div>
             ) : (
                 <button
@@ -40,53 +53,61 @@ export default function ResultGrid({ searchResult }: { searchResult: SearchResul
                             searchResult.chainId
                         );
 
-                        if (!ok && signature) {
-                            toast.error("본인 주소가 아닙니다.");
-                        }
+                        if (!ok && signature) toast.error("본인 주소가 아닙니다.");
                     }}
-                    className={cn(
-                        "h-[150px] bg-background rounded-2xl flex flex-col items-center justify-center gap-0 hover:bg-main duration-500",
-                        isPending && "animate-pulse"
-                    )}
                     disabled={isPending}
+                    className={cn(
+                        cardCenter,
+                        "transition-colors hover:bg-muted/30 hover:border-muted-foreground/30",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
+                        isPending && "opacity-80"
+                    )}
                 >
                     {isPending ? (
                         <Spinner className="size-10" />
                     ) : (
                         <>
                             <p className="text-lg font-bold">서명하기</p>
-                            <p className="text-sm text-muted-foreground">
-                                본인임을 증명하기 <br /> 위해 서명합니다.
+                            <p className="text-sm text-muted-foreground leading-relaxed text-center">
+                                본인임을 증명하기 위해 <br /> 서명합니다.
                             </p>
                         </>
                     )}
                 </button>
             )}
 
-            <div className="h-[150px] bg-background rounded-2xl flex flex-col items-center justify-center gap-5">
-                <p className="text-2xl font-bold">{getChainSymbol(searchResult.chainId)}</p>
-                <p className="font-bold">{Number(formatEther(searchResult.balance)).toFixed(4)}</p>
+            {/* Native balance */}
+            <div className={cardBase}>
+                <p className={label}>{chainSymbol}</p>
+                <p className={cn(value)}>{nativeBalance}</p>
             </div>
 
-            <div className="h-[150px] bg-background rounded-2xl flex flex-col items-center justify-center gap-5">
-                <p className="text-2xl font-bold">USDT</p>
-                <p className="font-bold">
-                    {calculateBalanceValue(searchResult.coinPriceUSDT, searchResult.balance)} USDT
+            {/* USDT */}
+            <div className={cardBase}>
+                <p className={label}>USDT</p>
+                <p className={cn(value)}>
+                    {calculateBalanceValue(searchResult.coinPriceUSDT, searchResult.balance)}{" "}
+                    <span className="text-sm font-semibold text-muted-foreground">USDT</span>
                 </p>
             </div>
 
-            <div className="h-[150px] bg-background rounded-2xl flex flex-col items-center justify-center gap-5">
-                <p className="text-2xl font-bold">KRW</p>
-                <p className="font-bold">
-                    ₩ {calculateBalanceValue(searchResult.coinPriceKRW, searchResult.balance)}
+            {/* KRW */}
+            <div className={cardBase}>
+                <p className={label}>KRW</p>
+                <p className={cn(value)}>
+                    <span className={cn(label)}>₩</span>{" "}
+                    {calculateBalanceValue(searchResult.coinPriceKRW, searchResult.balance)}
                 </p>
             </div>
 
-            <div className="h-[150px] bg-background rounded-2xl flex flex-col items-center justify-center gap-5">
-                <p className="text-2xl font-bold">
-                    <ArrowLeftRightIcon className="size-10" />
+            {/* Count */}
+            <div className={cardCenter}>
+                <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-muted/30 text-muted-foreground">
+                    <ArrowLeftRightIcon className="size-5" />
+                </span>
+                <p className="font-semibold">
+                    <span>{searchResult.count}</span> 회
                 </p>
-                <p className="font-bold">{searchResult.count} 회</p>
             </div>
         </div>
     );
