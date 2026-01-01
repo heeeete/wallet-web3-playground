@@ -1,0 +1,15 @@
+node_modules
+dist
+build
+coverage
+.next
+.cache
+.vite
+.output
+public
+*.min.*
+*.lock
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+README.md
