@@ -22,7 +22,10 @@ import { TransferFormData, createTransferFormSchema } from "./_lib/transferFormS
 export default function Home() {
     const { address, chainId } = useAccount();
     const balance = useBalance({ address });
-    const maxAmount = balance.data?.value ? Number(formatEther(balance.data.value)) : undefined;
+    const GAS_RESERVE = 0.001; // 가스비 예비 (약 21000 gas * 50 gwei)
+    const maxAmount = balance.data?.value
+        ? Math.max(0, Number(formatEther(balance.data.value)) - GAS_RESERVE)
+        : undefined;
     const publicClient = usePublicClient({ chainId });
     const formSchema = createTransferFormSchema(maxAmount);
     const { data: txHash, sendTransaction, isPending } = useSendTransaction();
