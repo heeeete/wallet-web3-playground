@@ -124,23 +124,23 @@ export function calculateBalanceValue(
 }
 ```
 
-**계산 예시 (1. 5 ETH @ $2000):**
+**계산 예시**
 ```
-balanceWei = 1500000000000000000n  // 1.5 ETH in Wei
+balanceWei = 1500000000000000000n  // 1.5 ETH
 coinPrice = 2000
 
-// Step 1: 가격 스케일링
+// 1): 가격 스케일링
 priceScaled = 20000000n  // 2000 * 10^4
 
-// Step 2: BigInt 곱셈 (정밀도 유지)
+// 2): BigInt 곱셈 (정밀도 유지)
 num = 1500000000000000000n * 20000000n
     = 30000000000000000000000000n
 
-// Step 3: Wei → ETH 변환 + 반올림
+// 3): Wei → ETH 변환 + 반올림
 denom = 1000000000000000000n  // 10^18
 amountScaled = (num + denom/2) / denom = 30000n
 
-// Step 4: 포맷팅
+// 4): 포맷팅
 formatFixedBigint(30000n, 4) = "3.0000"
 ```
 
@@ -184,7 +184,6 @@ export function formatFixedBigint(value: bigint, digits: number, locale?: string
 | **State** | Zustand 5.0 |
 | **UI** | shadcn/ui, Tailwind CSS 4, Radix UI |
 | **Form** | React Hook Form 7.69, Zod 4.2 |
-| **Others** | TanStack Query 5.90, Lucide React |
 
 ---
 
