@@ -83,7 +83,7 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
     - 문제 
         - 적은 단위는 문제가 안 되지만 계산 값이 `9007199254740991` 이상 넘어갈 시 일정 단위 뒤부터 0으로 표시되는 문제
     - 원인
-        - JS의 숫자는 부동소수점으로 큰 값을 계산시 정밀도가 보장되지 않는다.
+        - JS의 숫자는 부동소수점으로 큰 값을 계산 시 정밀도가 보장되지 않는다.
         ```js
         // Number로 변환되어 정밀도 손실
         const value = price * Number(formatEther(balance));

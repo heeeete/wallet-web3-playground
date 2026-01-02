@@ -20,7 +20,7 @@ export function formatFixedBigint(value: bigint, digits: number, locale?: string
     const intPart = v / base;
     const fracPart = v % base;
 
-    const intFormatted = new Intl.NumberFormat(locale).format(intPart);
+    const intFormatted = intPart.toLocaleString(locale);
     const fracStr = fracPart.toString().padStart(digits, "0");
 
     return digits > 0 ? `${sign}${intFormatted}.${fracStr}` : `${sign}${intFormatted}`;
