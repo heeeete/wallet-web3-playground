@@ -61,9 +61,9 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
 
 ---
 
-## 프로젝트 진행 중 발생한 에러
+## 프로젝트 진행 중 발생한 문제
 
-- 배포 후 브라우저에서 **Upbit 시세 API를 직접 호출**할 때 아래 **오류가 발생**했다.
+- #### 배포 후 브라우저에서 **Upbit 시세 API를 직접 호출**할 때 아래 **오류가 발생**
     - 에러 내용
         - Access to fetch at 'https://api.upbit.com/v1/ticker?markets=KRW-ETH' from origin 'https://wallet-web3-playground.vercel.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
         - GET https://api.upbit.com/v1/ticker?markets=KRW-ETH net::ERR_FAILED 429 (Too Many Requests)
@@ -78,6 +78,83 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 **간단한 Web3 지�
         - Upbit API를 기존에 KRW-ETH / USDT-ETH 총 2번 호출했다. 알아보니 콤마로 구분해 한 번에 여러 시세를 받을 수 있었다.
     - 최종 해결
         - 위 1, 2번 방법을 동시에 적용
+
+- #### 잔액 KRW/USDT 계산 시 정밀도 손실 문제 해결
+    - 문제 
+        - 적은 단위는 문제가 안 되지만 계산 값이 `9007199254740991` 이상 넘어갈 시 일정 단위 뒤부터 0으로 표시되는 문제
+    - 원인
+        - JS의 숫자는 부동소수점으로 큰 값을 계산 시 정밀도가 보장되지 않는다.
+        ```js
+        // Number로 변환되어 정밀도 손실
+        const value = price * Number(formatEther(balance));
+        ```
+    - 해결 방법
+        - BigInt를 끝까지 유지하며 계산 후, 최종 단계에서만 문자열로 변환
+        ```js
+        export function calculateBalanceValue(
+            coinPrice: number,
+            balanceWei: bigint,
+            digits = 4,
+            locale?: string
+        ): string {
+            const WEI_DECIMALS = 18n;
+            const priceScaled = parseUnits(coinPrice.toString(), digits);
+
+            const denom = 10n ** WEI_DECIMALS;
+            const num = balanceWei * priceScaled;
+            const amountScaled = (num + denom / 2n) / denom;
+
+            return formatFixedBigint(amountScaled, digits, locale);
+        }
+
+        // 예:  1. 5 ETH를 $2000로 환산 (소수점 4자리)
+            balanceWei = 1500000000000000000n  // 1.5 ETH
+            coinPrice = 2000
+
+            // Step 1: 가격 변환
+            priceScaled = 20000000n  // 2000 * 10^4
+
+            // Step 2: BigInt 곱셈 (정밀도 유지)
+            num = 1500000000000000000n * 20000000n
+                = 30000000000000000000000000n
+
+            // Step 3: Wei → ETH 변환 + 반올림
+            denom = 1000000000000000000n  // 10^18
+            amountScaled = (30000000000000000000000000n + 500000000000000000n) / 1000000000000000000n = 30000n  // $3. 0000
+        ```
+        - 포맷팅 - 정수/소수 분리 후 locale 적용
+        ```js
+        export function formatFixedBigint(value: bigint, digits: number, locale?: string) {
+            const sign = value < 0n ? "-" : "";
+            const v = value < 0n ? -value : value;
+
+            const base = 10n ** BigInt(digits);
+            const intPart = v / base;
+            const fracPart = v % base;
+
+            const intFormatted = intPart.toLocaleString(locale);
+            const fracStr = fracPart.toString().padStart(digits, "0");
+
+            return digits > 0 ? `${sign}${intFormatted}.${fracStr}` : `${sign}${intFormatted}`;
+        }
+
+        // 입력: 30000n (스케일링된 $3.0000)
+            value = 30000n
+            digits = 4
+
+            // Step 1: 분리 기준
+            base = 10000n  // 10^4
+
+            // Step 2: 정수부/소수부 계산
+            intPart = 30000n / 10000n = 3n
+            fracPart = 30000n % 10000n = 0n
+
+            // Step 3: 문자열 변환
+            intFormatted = "3"
+            fracStr = "0000"  // padStart로 4자리 보장
+            // 결과: "3.0000"
+        ```
+
 
 ---
 
