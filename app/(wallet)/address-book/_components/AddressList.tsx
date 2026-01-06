@@ -1,3 +1,5 @@
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { AddressItem } from "./AddressItem";
 
 interface AddressListProps {
@@ -32,24 +34,26 @@ export function AddressList({
     }
 
     return (
-        <div className="flex flex-col gap-4 overflow-y-auto flex-1 pt-2">
-            {entries
-                .sort((a, b) => a[0].localeCompare(b[0]))
-                .map(([name, address]) => (
-                    <AddressItem
-                        key={name}
-                        name={name}
-                        address={address}
-                        isEditing={editingOriginalName === name}
-                        editName={editName}
-                        editAddress={editAddress}
-                        onEditNameChange={onEditNameChange}
-                        onEditAddressChange={onEditAddressChange}
-                        onEditClick={() => onEditClick(name, address)}
-                        onEditSave={onEditSave}
-                        onRemove={() => onRemove(name)}
-                    />
-                ))}
-        </div>
+        <ScrollArea className="flex-1 overflow-y-auto">
+            <div className="flex flex-col gap-4 pt-2">
+                {entries
+                    .sort((a, b) => a[0].localeCompare(b[0]))
+                    .map(([name, address]) => (
+                        <AddressItem
+                            key={name}
+                            name={name}
+                            address={address}
+                            isEditing={editingOriginalName === name}
+                            editName={editName}
+                            editAddress={editAddress}
+                            onEditNameChange={onEditNameChange}
+                            onEditAddressChange={onEditAddressChange}
+                            onEditClick={() => onEditClick(name, address)}
+                            onEditSave={onEditSave}
+                            onRemove={() => onRemove(name)}
+                        />
+                    ))}
+            </div>
+        </ScrollArea>
     );
 }
