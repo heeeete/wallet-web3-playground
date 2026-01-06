@@ -44,4 +44,8 @@ const navItems = [
         label: "Explorer",
         href: "/explorer",
     },
+    {
+        label: "History",
+        href: "/history",
+    },
 ];
