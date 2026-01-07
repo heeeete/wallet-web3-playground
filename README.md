@@ -68,6 +68,7 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 Web3 지갑 dApp입�
 
 ###  5️⃣ History (Etherscan API)
 
+<img width="1728" height="991" alt="image" src="https://github.com/user-attachments/assets/9b274c2c-5224-4208-9496-df575d0edcb4" />
 
 - **사용자의 트랜잭션 내역**을 Etherscan API를 통해 조회하여 표시
 - **지원 체인**:
@@ -195,7 +196,7 @@ export function formatFixedBigint(value: bigint, digits: number, locale?: string
 
 ---
 
-## 성능 실험
+## 🔬 성능 실험
 
 ### 1️⃣ npm / pnpm 벤치마크 결과
 
