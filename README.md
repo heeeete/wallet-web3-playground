@@ -66,6 +66,38 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 Web3 지갑 dApp입�
   - 코인 시세:  업비트 Ticker API → `getCoinPrice()`
   - BigInt 기반 고정소수점 연산으로 부동소수점 오류 방지
 
+###  5️⃣ History (Etherscan API)
+
+
+- **사용자의 트랜잭션 내역**을 Etherscan API를 통해 조회하여 표시
+- **지원 체인**:
+  - Sepolia (테스트넷)
+  - Ethereum Mainnet
+  - Polygon
+  - Arbitrum
+  - OP Mainnet, Base는 현재 미지원
+- **주요 기능**:
+  - 연결된 지갑 주소와 체인 ID를 기반으로 자동 조회
+  - 트랜잭션을 최신순으로 정렬하여 표시
+  - 각 트랜잭션 항목에서 다음 정보 제공:
+    - 트랜잭션 해시 (클릭 시 해당 체인 explorer로 이동)
+    - 전송 금액 (ETH, MATIC 등 네이티브 토큰)
+    - 가스 비용 계산 (gasUsed × gasPrice)
+    - 발신/수신 주소
+    - 트랜잭션 시간 (YYYY-MM-DD HH: mm:ss 형식)
+    - 성공/실패 상태 (isError와 txreceipt_status 기반)
+- **UX 처리**:
+  - 로딩 상태:  Spinner 표시
+  - 에러 상태: 에러 메시지 표시
+  - 빈 내역: "트랜잭션 내역이 없습니다" 안내
+  - 미지원 체인:  "해당 체인은 지원하지 않습니다" 안내
+- **API Route**:
+  - `/api/chains/ethereum/transactions` — Etherscan API v2 연동 (서버 측 호출)
+  - React Query를 통한 효율적인 데이터 캐싱 (staleTime: 5초)
+- **접근성**:
+  - 각 트랜잭션 항목에 적절한 ARIA 레이블 적용
+  - 스크린 리더 지원 (sr-only 텍스트)
+
 ---
 
 ## 🔧 기술적 문제 해결
