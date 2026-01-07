@@ -174,3 +174,12 @@ input[type="number"] {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     animation: shimmer 5s infinite;
 }
+
+@keyframes orbit {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.orbit {
+    animation: orbit 10s linear infinite;
+}
