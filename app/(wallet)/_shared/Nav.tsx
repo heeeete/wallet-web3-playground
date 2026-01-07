@@ -37,6 +37,10 @@ const navItems = [
         href: "/",
     },
     {
+        label: "Tokens",
+        href: "/tokens",
+    },
+    {
         label: "Book",
         href: "/address-book",
     },
