@@ -2,7 +2,7 @@
 
 🔗 **Live Demo**: https://wallet-web3-playground.vercel.app
 
-Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 Web3 지갑 dApp입니다.  
+Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 Web3 지갑 dApp입니다.
 **지갑 연결, 코인 전송, 주소록, 주소/컨트랙트 탐색(Explorer)** 기능을 구현했습니다.
 
 ---
@@ -20,7 +20,7 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 Web3 지갑 dApp입�
 
 **기능:**
 - 수신자 주소 + 금액 입력 후 트랜잭션 전송
-- 전송 상태 UX 분리: 
+- 전송 상태 UX 분리:
   - **Pending**: 지갑에서 서명/승인 대기
   - **Confirming**: 블록에 포함될 때까지 대기
   - **Success/Failed**: wagmi 트랜잭션 상태 기반 결과 표시
@@ -66,6 +66,39 @@ Next.js(App Router) + RainbowKit + wagmi/viem으로 만든 Web3 지갑 dApp입�
   - 코인 시세:  업비트 Ticker API → `getCoinPrice()`
   - BigInt 기반 고정소수점 연산으로 부동소수점 오류 방지
 
+###  5️⃣ History (Etherscan API)
+
+<img width="1728" height="991" alt="image" src="https://github.com/user-attachments/assets/9b274c2c-5224-4208-9496-df575d0edcb4" />
+
+- **사용자의 트랜잭션 내역**을 Etherscan API를 통해 조회하여 표시
+- **지원 체인**:
+  - Sepolia (테스트넷)
+  - Ethereum Mainnet
+  - Polygon
+  - Arbitrum
+  - OP Mainnet, Base는 현재 미지원
+- **주요 기능**:
+  - 연결된 지갑 주소와 체인 ID를 기반으로 자동 조회
+  - 트랜잭션을 최신순으로 정렬하여 표시
+  - 각 트랜잭션 항목에서 다음 정보 제공:
+    - 트랜잭션 해시 (클릭 시 해당 체인 explorer로 이동)
+    - 전송 금액 (ETH, MATIC 등 네이티브 토큰)
+    - 가스 비용 계산 (gasUsed × gasPrice)
+    - 발신/수신 주소
+    - 트랜잭션 시간 (YYYY-MM-DD HH: mm:ss 형식)
+    - 성공/실패 상태 (isError와 txreceipt_status 기반)
+- **UX 처리**:
+  - 로딩 상태:  Spinner 표시
+  - 에러 상태: 에러 메시지 표시
+  - 빈 내역: "트랜잭션 내역이 없습니다" 안내
+  - 미지원 체인:  "해당 체인은 지원하지 않습니다" 안내
+- **API Route**:
+  - `/api/chains/ethereum/transactions` — Etherscan API v2 연동 (서버 측 호출)
+  - React Query를 통한 효율적인 데이터 캐싱 (staleTime: 5초)
+- **접근성**:
+  - 각 트랜잭션 항목에 적절한 ARIA 레이블 적용
+  - 스크린 리더 지원 (sr-only 텍스트)
+
 ---
 
 ## 🔧 기술적 문제 해결
@@ -87,7 +120,7 @@ GET https://api.upbit.com/v1/ticker?markets=KRW-ETH net:: ERR_FAILED 429 (Too Ma
 1. **Next.js API Route로 프록시**
    - 브라우저에서 직접 호출 대신 API Route(`/api/coin-price`)에서 서버 사이드로 호출
    - CORS는 브라우저 정책이므로 서버에서는 제약 없음
-   
+
 2. **API 호출 횟수 최적화**
    - 기존:  `KRW-ETH`, `USDT-ETH` 각각 호출 (2번)
    - 개선: `?markets=KRW-ETH,USDT-ETH` 한 번에 조회
@@ -163,6 +196,47 @@ export function formatFixedBigint(value: bigint, digits: number, locale?: string
 
 ---
 
+## 🔬 성능 실험
+
+### 1️⃣ npm / pnpm 벤치마크 결과
+
+
+Vercel 배포 시 설치 단계가 생각보다 오래 걸려서, 패키지 매니저(npm vs pnpm)에 따른 **의존성 설치/빌드 시간** 차이가 얼마나 나는지 간단히 비교했다.
+(런타임 성능이 아니라 개발/배포 파이프라인 관점의 성능 비교)
+
+> 측정 도구: `hyperfine`
+
+### 성능 비교 요약 (설치/빌드 시간)
+
+| 항목 | npm | pnpm | 결과 |
+|---|---:|---:|---|
+| `node_modules` 삭제 후 설치 | 32.080s ± 0.465 | 16.308s ± 0.380 | **pnpm이 15.772s 빠름** (**-49.2%**, **1.97×**) |
+| 캐시/스토어 정리까지 포함 후 설치 | 33.005s ± 1.256 | 41.173s ± 5.427 | pnpm이 8.168s 느림 (**+24.7%**) ※ `pnpm store prune` 포함 |
+| 빌드 (`next build`) | 10.715s ± 0.169 | 11.813s ± 0.169 | pnpm이 1.098s 느림 (**+10.2%**) |
+
+### 측정 커맨드
+
+```bash
+# 1) node_modules 삭제 후 설치 (클린 설치)
+hyperfine --warmup 1 --runs 10 'rm -rf node_modules && npm ci'
+hyperfine --warmup 1 --runs 10 'rm -rf node_modules && pnpm install --frozen-lockfile'
+
+# 2) 캐시/스토어 정리까지 포함 후 설치 (완전 초기화에 가까운 설치)
+hyperfine --warmup 1 --runs 5 'rm -rf node_modules && npm cache clean --force && npm ci'
+hyperfine --warmup 1 --runs 5 'rm -rf node_modules && pnpm store prune && pnpm install --frozen-lockfile'
+
+# 3) 빌드
+hyperfine --warmup 1 --runs 10 'npm run build'
+hyperfine --warmup 1 --runs 10 'pnpm run build'
+```
+
+### 메모 (측정 신뢰도)
+
+>측정은 같은 환경에서 순차 실행했지만, npm 측정을 먼저 끝내고 pnpm을 후반에 측정했음. 따라서 후반(pnpm) 결과가 발열/스로틀링/백그라운드 작업 영향을 더 받았을 가능성이 있어, 본 결과는 “완벽히 통제된 실험”이라기보단 대략적인 비교로 보는 게 안전함.
+
+>“캐시/스토어 정리까지 포함 후 설치”는 순수 설치 시간만 비교한 게 아니라 npm cache clean / pnpm store prune 같은 정리 작업 시간까지 포함한 총 시간이라, 특히 pnpm 쪽이 불리하게 보일 수 있음.
+
+---
 ## 🌐 지원 네트워크
 
 - Sepolia (테스트넷)
@@ -219,11 +293,11 @@ wallet-web3-playground/
 ---
 
 ## 회고
-짧은 사이드 프로젝트였지만, 첫 Web3 프로젝트였다. 구현하면서 자산 단위를 왜 BigInt로 다루는지(JS number 정밀도 한계와 오버플로우 방지) 이해했고, 노드와의 통신이 전형적인 REST 아키텍처 스타일보다 JSON-RPC 메서드 호출(eth_getBalance 등) 형태로 이뤄진다는 것도 자연스럽게 배웠다. 
+짧은 사이드 프로젝트였지만, 첫 Web3 프로젝트였다. 구현하면서 자산 단위를 왜 BigInt로 다루는지(JS number 정밀도 한계와 오버플로우 방지) 이해했고, 노드와의 통신이 전형적인 REST 아키텍처 스타일보다 JSON-RPC 메서드 호출(eth_getBalance 등) 형태로 이뤄진다는 것도 자연스럽게 배웠다.
 
-가장 헤맸던 건 가스(수수료) 모델이었다. 코인 전송을 만들고 나서 트랜잭션이 오래 pending 상태에 머물면, EOA 특성상 nonce가 밀려 다음 트랜잭션까지 연쇄적으로 대기하는 문제가 생겼다. 
+가장 헤맸던 건 가스(수수료) 모델이었다. 코인 전송을 만들고 나서 트랜잭션이 오래 pending 상태에 머물면, EOA 특성상 nonce가 밀려 다음 트랜잭션까지 연쇄적으로 대기하는 문제가 생겼다.
 
-확인해 보니, 기본값으로 설정된 **maxFeePerGas가 당시 네트워크 baseFee보다 낮아 블록에 포함되기 어려운 수수료 조건**이 되는 케이스가 있었다. 이 문제는 **estimateFeesPerGas()** 로 블록 포함 가능성이 높은 수수료를 추정해 **maxFeePerGas/maxPriorityFeePerGas**를 명시적으로 넣는 방식으로 완화했다. 
+확인해 보니, 기본값으로 설정된 **maxFeePerGas가 당시 네트워크 baseFee보다 낮아 블록에 포함되기 어려운 수수료 조건**이 되는 케이스가 있었다. 이 문제는 **estimateFeesPerGas()** 로 블록 포함 가능성이 높은 수수료를 추정해 **maxFeePerGas/maxPriorityFeePerGas**를 명시적으로 넣는 방식으로 완화했다.
 
 그 과정에서 baseFee, maxPriorityFeePerGas, maxFeePerGas의 역할을 이해하게 됐다.
 
@@ -231,4 +305,4 @@ Explorer 페이지에서는 별도의 회원가입/로그인 없이도, **메시
 
 처음 접하는 개념이 많아 쉽진 않았지만, 매 단계에서 생긴 의문을 직접 확인하며 배워나갈 수 있어 오래 기억에 남을 사이드 프로젝트였다.
 
-다음 단계로는, 노드(JSON-RPC)만으로는 주소별 트랜잭션 히스토리를 바로 얻기 어렵다는 점을 고려해, Explorer API(Etherscan/Blockscout 등) 연동으로 txList 조회 기능을 추가해보고 싶다.
+앞으로 블록체인을 공부하면서 이 프로젝트도 계속 업데이트해나가야겠다.

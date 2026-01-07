@@ -17,5 +17,3 @@ export const createTransferFormSchema = (maxAmount?: number) => {
             }),
     });
 };
-
-export type TransferFormData = z.infer<ReturnType<typeof createTransferFormSchema>>;
