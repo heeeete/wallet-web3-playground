@@ -60,6 +60,8 @@ export async function GET(request: NextRequest) {
 
         const data: { result: EtherscanTxListItem[] } = await response.json();
 
+        console.log(data);
+
         return NextResponse.json<EtherscanTxListResponse>({
             status: true,
             transactions:

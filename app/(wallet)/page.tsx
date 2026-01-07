@@ -8,21 +8,22 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { formatEther, parseEther } from "viem";
 import { useAccount, useBalance, usePublicClient, useSendTransaction } from "wagmi";
+import z from "zod";
 
 import { Form, FormField } from "@/components/ui/form";
 
+import { NotConnected } from "../../components/NotConnected";
 import { AmountField } from "./_components/AmountField";
-import { NotConnected } from "./_components/NotConnected";
 import { RecipientField } from "./_components/RecipientField";
 import { SubmitButton } from "./_components/SubmitButton";
 import { TransactionLink } from "./_components/TransactionLink";
 import { useTransactionState } from "./_hooks/useTransactionState";
-import { TransferFormData, createTransferFormSchema } from "./_lib/transferFormSchema";
+import { createTransferFormSchema } from "./_lib/transferFormSchema";
 
 export default function Home() {
     const { address, chainId } = useAccount();
     const balance = useBalance({ address });
-    const GAS_RESERVE = 0.001; // 가스비 예비 (약 21000 gas * 50 gwei)
+    const GAS_RESERVE = 0.001; // 가스비 예약
     const maxAmount = balance.data?.value
         ? Math.max(0, Number(formatEther(balance.data.value)) - GAS_RESERVE)
         : undefined;
@@ -31,7 +32,7 @@ export default function Home() {
     const { data: txHash, sendTransaction, isPending } = useSendTransaction();
     const { uiState } = useTransactionState({ txHash, isPending });
 
-    const form = useForm<TransferFormData>({
+    const form = useForm<z.input<typeof formSchema>, unknown, z.input<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             amount: undefined,
@@ -39,7 +40,7 @@ export default function Home() {
         },
     });
 
-    const onSubmit = async (data: TransferFormData) => {
+    const onSubmit = async (data: z.input<typeof formSchema>) => {
         if (!publicClient) return;
 
         const feeValues = await publicClient.estimateFeesPerGas();

@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 
+import { NotConnected } from "../../../components/NotConnected";
 import { TxListItem } from "./_components/TxListItem";
 import type { EtherscanTxListResponse } from "./_lib/type";
 
@@ -20,6 +21,10 @@ export default function HistoryPage() {
         enabled: !!address && !!chainId && !!chain?.name,
         staleTime: 1000 * 5,
     });
+
+    if (!address) {
+        return <NotConnected />;
+    }
 
     if (isLoading) {
         return (
