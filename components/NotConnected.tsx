@@ -7,8 +7,15 @@ export function NotConnected() {
             {/* 배경 */}
             <div className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-950 dark:to-zinc-950" />
-                <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-400/10" />
-                <div className="absolute left-1/2 top-2/3 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-500/10 blur-3xl dark:bg-sky-400/10" />
+                <div className="absolute inset-0 orbit">
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <div className="h-64 w-64 -translate-y-40 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-400/10" />
+                    </div>
+
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <div className="h-64 w-64 translate-y-40 rounded-full bg-sky-500/10 blur-3xl dark:bg-sky-400/10" />
+                    </div>
+                </div>
             </div>
 
             <div className="relative w-full max-w-md rounded-2xl border border-zinc-200/70 bg-white/70 p-6 shadow-sm backdrop-blur dark:border-zinc-800/60 dark:bg-zinc-950/50">

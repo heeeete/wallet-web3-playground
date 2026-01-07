@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+
 import WalletClient from "./_components/WalletClient";
 
 export const metadata: Metadata = {
@@ -7,7 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function WalletPage() {
-    return (
-            <WalletClient />
-    );
+    return <WalletClient />;
 }
