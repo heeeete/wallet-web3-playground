@@ -13,17 +13,17 @@ import z from "zod";
 import { Form, FormField } from "@/components/ui/form";
 
 import { NotConnected } from "../../../components/NotConnected";
+import { useTransactionState } from "../_hooks/useTransactionState";
+import { createTransferFormSchema } from "../_lib/transferFormSchema";
 import { AmountField } from "./AmountField";
 import { RecipientField } from "./RecipientField";
 import { SubmitButton } from "./SubmitButton";
 import { TransactionLink } from "./TransactionLink";
-import { useTransactionState } from "../_hooks/useTransactionState";
-import { createTransferFormSchema } from "../_lib/transferFormSchema";
 
 export default function Home() {
     const { address, chainId } = useAccount();
     const balance = useBalance({ address });
-    const GAS_RESERVE = 0.001; // 가스비 예약
+    const GAS_RESERVE = 0.0; // 가스비 예약
     const maxAmount = balance.data?.value
         ? Math.max(0, Number(formatEther(balance.data.value)) - GAS_RESERVE)
         : undefined;
