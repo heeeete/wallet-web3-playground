@@ -1,5 +1,5 @@
 import { useWalletSignIn } from "@/hooks/useWalletSignIn";
-import { calculateBalanceValue, cn } from "@/lib/utils";
+import { addThousandsSep, calculateBalanceValue, cn } from "@/lib/utils";
 import { chains } from "@/lib/wagmi";
 import { ArrowLeftRightIcon, BadgeCheckIcon, UserStarIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -25,7 +25,6 @@ export default function ResultGrid({ searchResult }: { searchResult: SearchResul
     const value = "text-xl font-bold";
 
     const chainSymbol = getChainSymbol(searchResult.chainId);
-    const nativeBalance = Number(formatEther(searchResult.balance)).toFixed(4);
 
     return (
         <div className="grid grid-cols-2 gap-5">
@@ -79,14 +78,19 @@ export default function ResultGrid({ searchResult }: { searchResult: SearchResul
             {/* Native balance */}
             <div className={cardBase}>
                 <p className={label}>{chainSymbol}</p>
-                <p className={cn(value)}>{nativeBalance}</p>
+                <p className={cn(value)}>
+                    {addThousandsSep(Number(formatEther(searchResult.balance)).toFixed(4))}
+                </p>
             </div>
 
             {/* USDT */}
             <div className={cardBase}>
                 <p className={label}>USDT</p>
                 <p className={cn(value)}>
-                    {calculateBalanceValue(searchResult.coinPriceUSDT, searchResult.balance)}{" "}
+                    {calculateBalanceValue(
+                        searchResult.coinPriceUSDT.toString(),
+                        searchResult.balance
+                    )}{" "}
                     <span className="text-sm font-semibold text-muted-foreground">USDT</span>
                 </p>
             </div>
@@ -96,7 +100,10 @@ export default function ResultGrid({ searchResult }: { searchResult: SearchResul
                 <p className={label}>KRW</p>
                 <p className={cn(value)}>
                     <span className={cn(label)}>₩</span>{" "}
-                    {calculateBalanceValue(searchResult.coinPriceKRW, searchResult.balance)}
+                    {calculateBalanceValue(
+                        searchResult.coinPriceKRW.toString(),
+                        searchResult.balance
+                    )}
                 </p>
             </div>
 
