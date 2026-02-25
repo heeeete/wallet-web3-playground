@@ -1,20 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowDown } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { type Control, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { formatEther, parseEther } from "viem";
+import { formatEther } from "viem";
 import { useAccount, useBalance, usePublicClient, useSendTransaction } from "wagmi";
-import z from "zod";
 
 import { Form, FormField } from "@/components/ui/form";
 
 import { NotConnected } from "../../../components/NotConnected";
 import { useTransactionState } from "../_hooks/useTransactionState";
-import { createTransferFormSchema } from "../_lib/transferFormSchema";
+import {
+    type TransferFormInput,
+    type TransferFormValues,
+    createTransferFormSchema,
+} from "../_lib/transferFormSchema";
 import { AmountField } from "./AmountField";
 import { RecipientField } from "./RecipientField";
 import { SubmitButton } from "./SubmitButton";
@@ -23,44 +26,53 @@ import { TransactionLink } from "./TransactionLink";
 export default function Home() {
     const { address, chainId } = useAccount();
     const balance = useBalance({ address });
-    const GAS_RESERVE = 0.0; // 가스비 예약
-    const maxAmount = balance.data?.value
-        ? Math.max(0, Number(formatEther(balance.data.value)) - GAS_RESERVE)
-        : undefined;
     const publicClient = usePublicClient({ chainId });
-    const formSchema = createTransferFormSchema(maxAmount);
     const { data: txHash, sendTransaction, isPending } = useSendTransaction();
     const { uiState } = useTransactionState({ txHash, isPending });
 
-    const form = useForm<z.input<typeof formSchema>, unknown, z.input<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const GAS_RESERVE = 0.0;
+    const maxAmount = balance.data?.value
+        ? Math.max(0, Number(formatEther(balance.data.value)) - GAS_RESERVE)
+        : undefined;
+
+    const schema = useMemo(() => {
+        return createTransferFormSchema({
+            decimals: 18,
+            maxAmountRaw: balance.data?.value ?? 0n,
+        });
+    }, [balance.data?.value]);
+
+    const form = useForm<TransferFormInput, unknown, TransferFormValues>({
+        resolver: zodResolver(schema),
+        mode: "onChange",
+        reValidateMode: "onChange",
         defaultValues: {
-            amount: undefined,
+            amount: "",
             recipient: "",
         },
     });
 
-    const onSubmit = async (data: z.input<typeof formSchema>) => {
+    const onSubmit = async (data: TransferFormValues) => {
         if (!publicClient) return;
 
         const feeValues = await publicClient.estimateFeesPerGas();
-
         const maxPriorityFeePerGas = feeValues.maxPriorityFeePerGas;
         const maxFeePerGas = feeValues.maxFeePerGas;
 
         sendTransaction({
             to: data.recipient as `0x${string}`,
-            value: parseEther(data.amount.toString()),
+            value: data.amount,
             maxFeePerGas,
             maxPriorityFeePerGas,
         });
     };
 
     useEffect(() => {
+        console.log(uiState);
         if (uiState === "success") {
             toast.success("트랜잭션이 성공적으로 완료되었습니다.");
-            balance.refetch(); // 잔액 새로고침
-            form.reset(); // 폼 초기화
+            balance.refetch();
+            form.reset();
         } else if (uiState === "error") {
             toast.error("트랜잭션이 실패했습니다.");
         }
@@ -79,7 +91,7 @@ export default function Home() {
                     className="flex flex-col gap-4"
                 >
                     <FormField
-                        control={form.control}
+                        control={form.control as unknown as Control<TransferFormInput>}
                         name="amount"
                         render={({ field }) => (
                             <AmountField field={field} maxAmount={maxAmount} uiState={uiState} />
@@ -89,7 +101,7 @@ export default function Home() {
                     <ArrowDown className="mx-auto text-main" />
 
                     <FormField
-                        control={form.control}
+                        control={form.control as unknown as Control<TransferFormInput>}
                         name="recipient"
                         render={({ field }) => <RecipientField field={field} uiState={uiState} />}
                     />

@@ -7,15 +7,11 @@ import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/f
 import { Input } from "@/components/ui/input";
 
 import { UiTxState } from "../_hooks/useTransactionState";
+import { sanitizeAmountInput } from "../_lib/sanitizeAmountInput";
+import type { TransferFormInput } from "../_lib/transferFormSchema";
 
 interface AmountFieldProps {
-    field: ControllerRenderProps<
-        {
-            amount: number;
-            recipient: string;
-        },
-        "amount"
-    >;
+    field: ControllerRenderProps<TransferFormInput, "amount">;
     maxAmount?: number;
     uiState: UiTxState;
 }
@@ -24,7 +20,9 @@ export function AmountField({ field, maxAmount, uiState }: AmountFieldProps) {
     const isDisabled = uiState === "wallet" || uiState === "confirming";
 
     const handleMaxBtn = () => {
-        if (maxAmount !== undefined) field.onChange(maxAmount);
+        if (maxAmount !== undefined) {
+            field.onChange(maxAmount.toString());
+        }
     };
 
     return (
@@ -59,15 +57,14 @@ export function AmountField({ field, maxAmount, uiState }: AmountFieldProps) {
                         )}
                     >
                         <Input
-                            type="number"
-                            step="0.0001"
+                            type="text"
+                            inputMode="decimal"
                             max={maxAmount}
                             value={field.value ?? ""}
-                            onChange={(e) =>
-                                field.onChange(
-                                    e.target.value === "" ? undefined : Number(e.target.value)
-                                )
-                            }
+                            onChange={(e) => {
+                                const v = sanitizeAmountInput(e.target.value);
+                                field.onChange(v);
+                            }}
                             placeholder="0.0001"
                             disabled={isDisabled}
                             className={cn(
