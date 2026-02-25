@@ -8,15 +8,10 @@ import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/f
 import { Input } from "@/components/ui/input";
 
 import { UiTxState } from "../_hooks/useTransactionState";
+import type { TransferFormInput } from "../_lib/transferFormSchema";
 
 interface RecipientFieldProps {
-    field: ControllerRenderProps<
-        {
-            amount: number;
-            recipient: string;
-        },
-        "recipient"
-    >;
+    field: ControllerRenderProps<TransferFormInput, "recipient">;
     uiState: UiTxState;
 }
 
